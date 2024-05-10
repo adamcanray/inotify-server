@@ -2,6 +2,7 @@ import pyinotify
 import config
 import os
 import time
+import dicom_handler
 
 class EventHandler(pyinotify.ProcessEvent):
   def __init__(self):
@@ -9,7 +10,7 @@ class EventHandler(pyinotify.ProcessEvent):
     self.last_close_write_time = {}
 
   def process_IN_DELETE(self, event):
-    print("File deleted:", event.pathname)
+    dicom_handler.dicom_deleted(event.pathname)
 
   def process_IN_CLOSE_WRITE(self, event):
     current_time = time.time()
@@ -20,7 +21,7 @@ class EventHandler(pyinotify.ProcessEvent):
       if current_time - last_time < 1:
         return
 
-    print("File written:", file_path)
+    dicom_handler.dicom_written(event.pathname)
     self.last_close_write_time[file_path] = current_time
 
 def main():
